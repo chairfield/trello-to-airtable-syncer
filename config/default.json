@@ -1,5 +1,6 @@
 {
   "trello": {
-    "key": ""
+    "secret": "",
+    "callbackUrl": ""
   }
 }
