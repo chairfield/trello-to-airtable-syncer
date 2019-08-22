@@ -26,11 +26,13 @@ app.post('/', function(req, res) {
     console.log(body.action);
     if (!verifyTrelloWebhookRequest(req, config.trello.secret, config.trello.callbackUrl)) {
         console.log("Not a verified Trello webhook. Is your callbackURL correct?");
+        res.sendStatus(500);
         return;
     }
 
     if (typeof body.action === "undefined" || body.action.type !== "commentCard") {
         console.log("Ignoring request of type: " + body.action.type);
+        res.sendStatus(200);
         return;
     }
 
@@ -38,6 +40,7 @@ app.post('/', function(req, res) {
     const cardName = body.action.data.card.name;
     const commenterFullName = body.action.memberCreator.fullName;
     console.log("A Trello user commented:", commentText, "-", cardName, "-", commenterFullName);
+    res.sendStatus(200);
 });
 
 app.listen(8080, function(err) {
