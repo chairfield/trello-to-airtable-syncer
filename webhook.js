@@ -36,6 +36,12 @@ app.post('/', function(req, res) {
         return;
     }
 
+    if (body.action.data.board.id !== config.trello.expectedBoardId) {
+        console.log("Expected a different board id, got:", body.action.data.board.id);
+        res.sendStatus(500);
+        return;
+    }
+
     const commentText = body.action.data.text;
     const cardName = body.action.data.card.name;
     const commenterFullName = body.action.memberCreator.fullName;

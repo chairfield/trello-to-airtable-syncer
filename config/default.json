@@ -1,6 +1,7 @@
 {
   "trello": {
     "secret": "",
-    "callbackUrl": ""
+    "callbackUrl": "",
+    "expectedBoardId": ""
   }
 }
