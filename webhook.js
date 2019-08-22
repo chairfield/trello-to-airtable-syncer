@@ -14,8 +14,6 @@ function verifyTrelloWebhookRequest(request, secret, callbackURL) {
   var content = JSON.stringify(request.body) + callbackURL;
   var doubleHash = base64Digest(content);
   var headerHash = request.headers['x-trello-webhook'];
-  console.log('headerHash', headerHash);
-  console.log('doubleHash', doubleHash);
   return doubleHash == headerHash;
 }
 
@@ -25,11 +23,25 @@ app.get('/', function(req, res) {
 
 app.post('/', function(req, res) {
     const body = req.body;
-    console.log('post', body, verifyTrelloWebhookRequest(req, config.trello.secret, config.trello.callbackUrl));
+    console.log(body.action);
+    if (!verifyTrelloWebhookRequest(req, config.trello.secret, config.trello.callbackUrl)) {
+        console.log("Not a verified Trello webhook. Is your callbackURL correct?");
+        return;
+    }
+
+    if (typeof body.action === "undefined" || body.action.type !== "commentCard") {
+        console.log("Ignoring request of type: " + body.action.type);
+        return;
+    }
+
+    const commentText = body.action.data.text;
+    const cardName = body.action.data.card.name;
+    const commenterFullName = body.action.memberCreator.fullName;
+    console.log("A Trello user commented:", commentText, "-", cardName, "-", commenterFullName);
 });
 
 app.listen(8080, function(err) {
-    if (err){
+    if (err) {
         throw err;
     }
 
