@@ -1,0 +1,18 @@
+{
+  "name": "trello-to-airtable-syncer",
+  "version": "1.0.0",
+  "description": "Syncs Trello comments to Airtable",
+  "main": "webhook.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "config": "^3.2.2",
+    "express": "^4.17.1",
+    "jest": "^24.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "MIT"
+}
