@@ -13,6 +13,6 @@
   "scripts": {
     "test": "jest"
   },
-  "author": "",
+  "author": "Chris Hairfield <chris@miraclemessages.org>",
   "license": "MIT"
 }
