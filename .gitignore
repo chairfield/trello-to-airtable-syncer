@@ -1,2 +1,3 @@
 config/local*
+.idea
 node_modules
