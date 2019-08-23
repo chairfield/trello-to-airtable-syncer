@@ -2,6 +2,9 @@ const config = require("config");
 const crypto = require('crypto');
 const express = require('express');
 const bodyParser = require('body-parser');
+const airtable = require('airtable');
+
+const base = new airtable({ apiKey: config.airtable.apiKey }).base(config.airtable.baseId);
 
 const app = express();
 
@@ -46,6 +49,39 @@ app.post('/', function(req, res) {
     const cardName = body.action.data.card.name;
     const commenterFullName = body.action.memberCreator.fullName;
     console.log("A Trello user commented:", commentText, "-", cardName, "-", commenterFullName);
+
+    if (cardName.length < 3) {
+        console.log("Card Name is too short:", cardName);
+        res.sendStatus(200);
+        return;
+    }
+
+    // TODO: Make table name configurable
+    base('Cases as of 6/13/19').select({
+        // TODO: Only select the fields that I need
+        filterByFormula: "FIND(" + "'Torres'" + ",{Client Name})>=1"
+    }).eachPage(function page(records, fetchNextPage) {
+        if (records.length > 0) {
+            records.forEach(function(record) {
+                // TODO: Update Airtable by appending newest comment
+                console.log("Retrieved", record.get("Client Name"), record.id);
+            });
+
+            // TODO: Filter down to the newest record to update
+            // TODO: Email if there are 2+ records submitted around the same time
+
+            fetchNextPage();
+        } else {
+            // TODO: Send a warning email to a configurable list of addresses
+            console.log("Found 0 records.");
+        }
+    }, function done(error) {
+        if (error != null) {
+            console.log(error);
+        }
+    });
+
+    // TODO: If Airtable errors out, return a 500 so we get a retry
     res.sendStatus(200);
 });
 

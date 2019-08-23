@@ -3,5 +3,9 @@
     "secret": "",
     "callbackUrl": "",
     "expectedBoardId": ""
+  },
+  "airtable": {
+    "apiKey": "",
+    "baseId": ""
   }
 }
