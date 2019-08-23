@@ -19,22 +19,22 @@ router.get('/', function(req, res) {
  * POST /, which Trello calls whenever an update occurs.
  */
 router.post('/', function(req, res) {
-  const body = req.body;
-  debug(body.action);
   if (!verifyTrelloWebhookRequest(req, config.trello.secret, config.trello.callbackUrl)) {
     debug("Not a verified Trello webhook. Is your callbackURL correct?");
     res.sendStatus(500);
     return;
   }
 
+  const body = req.body;
+
   if (typeof body.action === "undefined" || body.action.type !== "commentCard") {
-    debug("Ignoring request of type: " + body.action.type);
+    debug("Ignoring request of type %s", body.action.type);
     res.sendStatus(200);
     return;
   }
 
   if (body.action.data.board.id !== config.trello.expectedBoardId) {
-    debug("Expected a different board id, got:", body.action.data.board.id);
+    debug("Expected a different board id, got %s", body.action.data.board.id);
     res.sendStatus(500);
     return;
   }
@@ -42,10 +42,10 @@ router.post('/', function(req, res) {
   const commentText = body.action.data.text;
   const cardName = body.action.data.card.name;
   const commenterFullName = body.action.memberCreator.fullName;
-  debug("A Trello user commented:", commentText, "-", cardName, "-", commenterFullName);
+  debug("%s commented '%s' on card '%s'", commenterFullName, commentText, cardName);
 
   if (cardName.length < 3) {
-    debug("Card Name is too short:", cardName);
+    debug("Card Name '%s' is too short:", cardName);
     res.sendStatus(200);
     return;
   }
@@ -58,7 +58,7 @@ router.post('/', function(req, res) {
     if (records.length > 0) {
       records.forEach(function(record) {
         // TODO: Update Airtable by appending newest comment
-        debug("Retrieved", record.get("Client Name"), record.id);
+        debug("Retrieved record '%s', id=%s", record.get("Client Name"), record.id);
       });
 
       // TODO: Filter down to the newest record to update
