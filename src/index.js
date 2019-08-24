@@ -1,8 +1,8 @@
-const AirtableDAL = require('./airtableDAL');
 const config = require('config');
 const crypto = require('crypto');
 const debug = require('debug')('trello-to-airtable-syncer:index');
 const express = require('express');
+const WebhookController = require('./webhookController');
 
 const router = express.Router();
 
@@ -23,53 +23,25 @@ router.post('/', function(req, res) {
     return;
   }
 
-  const { action: trelloAction } = req.body;
-
-  if (typeof trelloAction === "undefined" || trelloAction.type !== "commentCard") {
-    debug("Ignoring request of type %s", trelloAction.type);
-    res.sendStatus(200);
-    return;
-  }
-
   const {
-    board,
-    text: cardText,
-    card
-  } = trelloAction.data;
+    model,
+    action
+  } = req.body;
 
-  if (board.id !== config.trello.expectedBoardId) {
-    debug("Expected a different board id, got %s", board.id);
+  if (model.id !== config.trello.expectedBoardId) {
+    debug("Expected a different board id, got %s", model.id);
     res.sendStatus(500);
     return;
   }
 
-  if (card.name.length < 3) {
-    debug("Card Name '%s' is too short:", card.name);
-    res.sendStatus(200);
+  if (typeof action === "undefined") {
+    debug("req.body.action is undefined");
+    res.sendStatus(500);
     return;
   }
 
-  debug("%s commented '%s' on card '%s'", trelloAction.memberCreator.fullName, cardText, card.name);
-
-  new AirtableDAL().selectClientsByNamePrefix(
-      function(records) {
-        records.forEach(function(record) {
-          // TODO: Update Airtable by appending newest comment
-          debug("Retrieved record '%s', id=%s", record.get("Client Name"), record.id);
-        });
-
-        // TODO: Filter down to the newest record to update
-        // TODO: Email if there are 2+ records submitted around the same time
-      },
-      function(error) {
-        if (error != null) {
-          debug(error);
-        }
-      }
-  );
-
-  // TODO: If Airtable errors out, return a 500 so we get a retry
-  res.sendStatus(200);
+  const status = new WebhookController().handleWebhook(action);
+  res.sendStatus(status);
 });
 
 function verifyTrelloWebhookRequest(request, secret, callbackURL) {
