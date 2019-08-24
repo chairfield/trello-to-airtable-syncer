@@ -1,12 +1,10 @@
-const airtable = require('airtable');
+const AirtableDAL = require('./airtableDAL');
 const config = require('config');
 const crypto = require('crypto');
 const debug = require('debug')('trello-to-airtable-syncer:index');
 const express = require('express');
 
 const router = express.Router();
-
-const base = new airtable({ apiKey: config.airtable.apiKey }).base(config.airtable.baseId);
 
 /**
  * GET /, which Trello calls expecting a 200 when configuring its webhook.
@@ -53,30 +51,22 @@ router.post('/', function(req, res) {
 
   debug("%s commented '%s' on card '%s'", trelloAction.memberCreator.fullName, cardText, card.name);
 
-  // TODO: Make table name configurable
-  base('Cases as of 6/13/19').select({
-    // TODO: Only select the fields that I need
-    filterByFormula: "FIND(" + "'Torres'" + ",{Client Name})>=1"
-  }).eachPage(function page(records, fetchNextPage) {
-    if (records.length > 0) {
-      records.forEach(function(record) {
-        // TODO: Update Airtable by appending newest comment
-        debug("Retrieved record '%s', id=%s", record.get("Client Name"), record.id);
-      });
+  new AirtableDAL().selectClientsByNamePrefix(
+      function(records) {
+        records.forEach(function(record) {
+          // TODO: Update Airtable by appending newest comment
+          debug("Retrieved record '%s', id=%s", record.get("Client Name"), record.id);
+        });
 
-      // TODO: Filter down to the newest record to update
-      // TODO: Email if there are 2+ records submitted around the same time
-
-      fetchNextPage();
-    } else {
-      // TODO: Send a warning email to a configurable list of addresses
-      debug("Found 0 records.");
-    }
-  }, function done(error) {
-    if (error != null) {
-      debug(error);
-    }
-  });
+        // TODO: Filter down to the newest record to update
+        // TODO: Email if there are 2+ records submitted around the same time
+      },
+      function(error) {
+        if (error != null) {
+          debug(error);
+        }
+      }
+  );
 
   // TODO: If Airtable errors out, return a 500 so we get a retry
   res.sendStatus(200);
