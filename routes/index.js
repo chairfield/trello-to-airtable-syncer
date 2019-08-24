@@ -25,30 +25,33 @@ router.post('/', function(req, res) {
     return;
   }
 
-  const body = req.body;
+  const { action: trelloAction } = req.body;
 
-  if (typeof body.action === "undefined" || body.action.type !== "commentCard") {
-    debug("Ignoring request of type %s", body.action.type);
+  if (typeof trelloAction === "undefined" || trelloAction.type !== "commentCard") {
+    debug("Ignoring request of type %s", trelloAction.type);
     res.sendStatus(200);
     return;
   }
 
-  if (body.action.data.board.id !== config.trello.expectedBoardId) {
-    debug("Expected a different board id, got %s", body.action.data.board.id);
+  const {
+    board,
+    text: cardText,
+    card
+  } = trelloAction.data;
+
+  if (board.id !== config.trello.expectedBoardId) {
+    debug("Expected a different board id, got %s", board.id);
     res.sendStatus(500);
     return;
   }
 
-  const commentText = body.action.data.text;
-  const cardName = body.action.data.card.name;
-  const commenterFullName = body.action.memberCreator.fullName;
-  debug("%s commented '%s' on card '%s'", commenterFullName, commentText, cardName);
-
-  if (cardName.length < 3) {
-    debug("Card Name '%s' is too short:", cardName);
+  if (card.name.length < 3) {
+    debug("Card Name '%s' is too short:", card.name);
     res.sendStatus(200);
     return;
   }
+
+  debug("%s commented '%s' on card '%s'", trelloAction.memberCreator.fullName, cardText, card.name);
 
   // TODO: Make table name configurable
   base('Cases as of 6/13/19').select({
