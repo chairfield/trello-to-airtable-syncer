@@ -32,8 +32,44 @@ class TrelloAction {
         return this._date;
     }
 
-    get actionData() {
-        return this._data;
+    /**
+     * Gets the modified card.
+     * @returns {*} The modified card.
+     */
+    get card() {
+        return this._data.card;
+    }
+
+    /**
+     * Gets the modified list.
+     * @returns {*} The modified list.
+     */
+    get list() {
+        return this._data.list;
+    }
+
+    /**
+     * Gets the modified board.
+     * @returns {*} The modified board.
+     */
+    get board() {
+        return this._data.board;
+    }
+
+    /**
+     * Gets the comment text, if the action is commentCard.
+     * @returns {*} The comment text, else undefined.
+     */
+    get commentText() {
+        return this._data.text;
+    }
+
+    /**
+     * Gets the attachment being added or deleted, if the action is addAttachmentToCard or deleteAttachmentFromCard.
+     * @returns {*} The attachment being added or deleted, else undefined.
+     */
+    get attachment() {
+        return this._data.attachment;
     }
 }
 
