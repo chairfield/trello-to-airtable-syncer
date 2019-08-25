@@ -4,6 +4,7 @@ const AirtableDAL = require('./airtableDAL');
 module.exports = function ClientLookupService() {
     this.findMatchingClient = function(trelloCard, successHandler, errorHandler) {
         new AirtableDAL().selectClientsByNamePrefix(
+            trelloCard,
             function(records) {
                 records.forEach(function(record) {
                     // TODO: Update Airtable by appending newest comment

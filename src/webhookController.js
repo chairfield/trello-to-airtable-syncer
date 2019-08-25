@@ -1,5 +1,6 @@
 const config = require('config');
 const debug = require('debug')('trello-to-airtable-syncer:webhookController');
+const AirtableDAL = require('./airtableDAL');
 const ClientLookupService = require('./clientLookupService');
 const TrelloAction = require('./trelloAction');
 
@@ -46,7 +47,17 @@ module.exports = function WebhookController() {
                 new ClientLookupService().findMatchingClient(
                     trelloAction.card,
                     function(airtableRecord) {
-                        // TODO: Implement
+                        const commentToAppend =
+                            "On " + new Date().toISOString() + ", " + trelloAction.user.fullName
+                                + " wrote: \"" + trelloAction.commentText + "\"\n\n";
+
+                        function appendComment(currentComments, commentToAppend) {
+                            return currentComments === undefined ?  commentToAppend : currentComments + commentToAppend;
+                        }
+
+                        new AirtableDAL().updateClient(
+                            airtableRecord.id,
+                            appendComment(airtableRecord.get("Trello Comments"), commentToAppend));
                     },
                     function(error) {
                         // TODO: Implement
