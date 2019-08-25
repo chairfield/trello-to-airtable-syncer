@@ -1,3 +1,4 @@
+const config = require('config');
 const debug = require('debug')('trello-to-airtable-syncer:webhookController');
 const ClientLookupService = require('./clientLookupService');
 const TrelloAction = require('./trelloAction');
@@ -5,10 +6,32 @@ const TrelloAction = require('./trelloAction');
 module.exports = function WebhookController() {
     this.handleWebhook = function(action) {
         const trelloAction = new TrelloAction(action);
+        switch (trelloAction.type) {
+            case "commentCard":
+            case "addAttachmentToCard":
+            case "deleteAttachmentFromCard":
+                break;
+            default:
+                debug("Ignoring action of type %s", trelloAction.type);
+                return 200;
+        }
 
-        // TODO: TDD the correct validations on card, list, and board
-        if (trelloAction.card.name.length < 3) {
-            debug("Card Name '%s' is too short:", card.name);
+        if (trelloAction.board.id !== config.trello.expectedBoardId) {
+            debug("Invalid Trello board id: %s", trelloAction.board.id);
+            // TODO: email error
+            return 200;
+        }
+
+        // TODO: Make this configurable, and able to support a list of lists to filter by id
+        if (trelloAction.list.name === "Information for volunteers"
+            || trelloAction.list.id === "5cca20f711b3e979997d48f1") {
+            debug("Skipping action on Trello list: %s", trelloAction.list.name);
+            return 200;
+        }
+
+        if (trelloAction.card.name.length < 5) {
+            debug("Card name is too short: %s", trelloAction.card.name);
+            // TODO: email error
             return 200;
         }
 
@@ -46,8 +69,6 @@ module.exports = function WebhookController() {
                     trelloAction.card.name);
                 debug("not yet implemented");
                 break;
-            default:
-                debug("Ignoring action of type %s", trelloAction.type);
         }
 
         // TODO: If Airtable errors out, return a 500 so we get a retry
