@@ -1,24 +1,27 @@
 const AirtableDAL = require('./airtableDAL');
 const debug = require('debug')('trello-to-airtable-syncer:webhookController');
+const TrelloAction = require('./trelloAction');
 
 module.exports = function WebhookController() {
     this.handleWebhook = function(action) {
-        if (action.type !== "commentCard") {
-            debug("Ignoring request of type %s", action.type);
+        const trelloAction = new TrelloAction(action);
+
+        if (trelloAction.type !== "commentCard") {
+            debug("Ignoring request of type %s", trelloAction.type);
             return 200;
         }
 
         const {
             text: cardText,
             card
-        } = action.data;
+        } = trelloAction.actionData;
 
         if (card.name.length < 3) {
             debug("Card Name '%s' is too short:", card.name);
             return 200;
         }
 
-        debug("%s commented '%s' on card '%s'", action.memberCreator.fullName, cardText, card.name);
+        debug("%s commented '%s' on card '%s'", trelloAction.user.fullName, cardText, card.name);
 
         new AirtableDAL().selectClientsByNamePrefix(
             function(records) {
