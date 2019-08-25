@@ -1,5 +1,5 @@
-const AirtableDAL = require('./airtableDAL');
 const debug = require('debug')('trello-to-airtable-syncer:webhookController');
+const ClientLookupService = require('./clientLookupService');
 const TrelloAction = require('./trelloAction');
 
 module.exports = function WebhookController() {
@@ -20,23 +20,14 @@ module.exports = function WebhookController() {
                     trelloAction.user.fullName,
                     trelloAction.commentText,
                     trelloAction.card.name);
-
-                new AirtableDAL().selectClientsByNamePrefix(
-                    function(records) {
-                        records.forEach(function(record) {
-                            // TODO: Update Airtable by appending newest comment
-                            debug("Retrieved record '%s', id=%s", record.get("Client Name"), record.id);
-                        });
-
-                        // TODO: Filter down to the newest record to update
-                        // TODO: Email if there are 2+ records submitted around the same time
+                new ClientLookupService().findMatchingClient(
+                    trelloAction.card,
+                    function(airtableRecord) {
+                        // TODO: Implement
                     },
                     function(error) {
-                        if (error != null) {
-                            debug(error);
-                        }
-                    }
-                );
+                        // TODO: Implement
+                    });
 
                 break;
             case "addAttachmentToCard":
