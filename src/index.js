@@ -7,7 +7,8 @@ const WebhookController = require('./webhookController');
 const router = express.Router();
 
 /**
- * GET /, which Trello calls expecting a 200 when configuring its webhook.
+ * GET /, which Trello calls expecting a 200 when configuring its webhook. It doesn't pass the Trello model id it's been
+ * setup for in any way (header, query param).
  */
 router.get('/', function(req, res) {
   res.sendStatus(200);
