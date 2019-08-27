@@ -4,27 +4,24 @@ const AirtableDAL = require('./airtableDAL');
 const ClientLookupService = require('./clientLookupService');
 const TrelloAction = require('./trelloAction');
 
-function generateCommentString(trelloAction) {
-    const prefix = "On " + new Date().toISOString() + ", " + trelloAction.user.fullName;
-    switch (trelloAction.type) {
-        case "commentCard":
-            return prefix + " commented: \"" + trelloAction.commentText + "\"";
-        case "addAttachmentToCard":
-            return prefix + " added an attachment: " + JSON.stringify(trelloAction.attachment);
-        case "deleteAttachmentFromCard":
-            return prefix + " removed an attachment: " + JSON.stringify(trelloAction.attachment);
-    }
-
-    throw new Error("Trying to generate a comment for an invalid webhook type.");
+function appendComment(currentComments, commentToAppend) {
+    return currentComments === undefined ? commentToAppend : currentComments + "\n\n" + commentToAppend;
 }
 
 module.exports = function WebhookController() {
     this.handleWebhook = function(action) {
         const trelloAction = new TrelloAction(action);
+
+        let commentToAppend = "On " + new Date().toISOString() + ", " + trelloAction.user.fullName;
         switch (trelloAction.type) {
             case "commentCard":
+                commentToAppend += " commented: \"" + trelloAction.commentText + "\"";
+                break;
             case "addAttachmentToCard":
+                commentToAppend += " added an attachment: " + JSON.stringify(trelloAction.attachment);
+                break;
             case "deleteAttachmentFromCard":
+                commentToAppend += " removed an attachment: " + JSON.stringify(trelloAction.attachment);
                 break;
             default:
                 debug("Ignoring action of type %s", trelloAction.type);
@@ -46,16 +43,10 @@ module.exports = function WebhookController() {
         new ClientLookupService().findMatchingClient(
             trelloAction.card,
             function(airtableRecord) {
-                const commentToAppend = generateCommentString(trelloAction);
                 debug("Appending the following comment: " + commentToAppend);
-
-                function appendComment(currentComments, commentToAppend) {
-                    return currentComments === undefined ?  commentToAppend : currentComments + commentToAppend;
-                }
-
                 new AirtableDAL().updateClient(
                     airtableRecord.id,
-                    appendComment(airtableRecord.get("Trello Comments"), commentToAppend) + "\n\n");
+                    appendComment(airtableRecord.get("Trello Comments"), commentToAppend));
             },
             function(error) {
                 // TODO: Implement
