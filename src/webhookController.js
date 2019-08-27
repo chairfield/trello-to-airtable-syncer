@@ -23,13 +23,6 @@ module.exports = function WebhookController() {
             return 200;
         }
 
-        // TODO: Make this configurable, and able to support a list of lists to filter by id
-        if (trelloAction.list.name === "Information for volunteers"
-            || trelloAction.list.id === "5cca20f711b3e979997d48f1") {
-            debug("Skipping action on Trello list: %s", trelloAction.list.name);
-            return 200;
-        }
-
         if (trelloAction.card.name.length < 5) {
             debug("Card name is too short: %s", trelloAction.card.name);
             // TODO: email error

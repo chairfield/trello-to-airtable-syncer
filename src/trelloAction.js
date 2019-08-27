@@ -41,14 +41,6 @@ class TrelloAction {
     }
 
     /**
-     * Gets the modified list.
-     * @returns {*} The modified list.
-     */
-    get list() {
-        return this._data.list;
-    }
-
-    /**
      * Gets the modified board.
      * @returns {*} The modified board.
      */
