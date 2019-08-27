@@ -4,6 +4,20 @@ const AirtableDAL = require('./airtableDAL');
 const ClientLookupService = require('./clientLookupService');
 const TrelloAction = require('./trelloAction');
 
+function generateCommentString(trelloAction) {
+    const prefix = "On " + new Date().toISOString() + ", " + trelloAction.user.fullName;
+    switch (trelloAction.type) {
+        case "commentCard":
+            return prefix + " commented: \"" + trelloAction.commentText + "\"";
+        case "addAttachmentToCard":
+            return prefix + " added an attachment: " + JSON.stringify(trelloAction.attachment);
+        case "deleteAttachmentFromCard":
+            return prefix + " removed an attachment: " + JSON.stringify(trelloAction.attachment);
+    }
+
+    throw new Error("Trying to generate a comment for an invalid webhook type.");
+}
+
 module.exports = function WebhookController() {
     this.handleWebhook = function(action) {
         const trelloAction = new TrelloAction(action);
@@ -29,51 +43,23 @@ module.exports = function WebhookController() {
             return 200;
         }
 
-        // TODO: Test each action type
-        switch (trelloAction.type) {
-            case "commentCard":
-                debug(
-                    "%s commented '%s' on card '%s'",
-                    trelloAction.user.fullName,
-                    trelloAction.commentText,
-                    trelloAction.card.name);
-                new ClientLookupService().findMatchingClient(
-                    trelloAction.card,
-                    function(airtableRecord) {
-                        const commentToAppend =
-                            "On " + new Date().toISOString() + ", " + trelloAction.user.fullName
-                                + " wrote: \"" + trelloAction.commentText + "\"\n\n";
+        new ClientLookupService().findMatchingClient(
+            trelloAction.card,
+            function(airtableRecord) {
+                const commentToAppend = generateCommentString(trelloAction);
+                debug("Appending the following comment: " + commentToAppend);
 
-                        function appendComment(currentComments, commentToAppend) {
-                            return currentComments === undefined ?  commentToAppend : currentComments + commentToAppend;
-                        }
+                function appendComment(currentComments, commentToAppend) {
+                    return currentComments === undefined ?  commentToAppend : currentComments + commentToAppend;
+                }
 
-                        new AirtableDAL().updateClient(
-                            airtableRecord.id,
-                            appendComment(airtableRecord.get("Trello Comments"), commentToAppend));
-                    },
-                    function(error) {
-                        // TODO: Implement
-                    });
-
-                break;
-            case "addAttachmentToCard":
-                debug(
-                    "%s added attachment '%s' on card '%s'",
-                    trelloAction.user.fullName,
-                    trelloAction.attachment.name,
-                    trelloAction.card.name);
-                debug("not yet implemented");
-                break;
-            case "deleteAttachmentFromCard":
-                debug(
-                    "%s deleted attachment '%s' from card '%s'",
-                    trelloAction.user.fullName,
-                    trelloAction.attachment.name,
-                    trelloAction.card.name);
-                debug("not yet implemented");
-                break;
-        }
+                new AirtableDAL().updateClient(
+                    airtableRecord.id,
+                    appendComment(airtableRecord.get("Trello Comments"), commentToAppend) + "\n\n");
+            },
+            function(error) {
+                // TODO: Implement
+            });
 
         // TODO: If Airtable errors out, return a 500 so we get a retry
         return 200;
