@@ -24,16 +24,7 @@ router.post('/', function(req, res) {
     return;
   }
 
-  const {
-    model,
-    action
-  } = req.body;
-
-  if (model.id !== config.trello.expectedBoardId) {
-    debug("Expected a different board id, got %s", model.id);
-    res.sendStatus(500);
-    return;
-  }
+  const { action } = req.body;
 
   if (typeof action === "undefined") {
     debug("req.body.action is undefined");
@@ -41,8 +32,8 @@ router.post('/', function(req, res) {
     return;
   }
 
-  const status = new WebhookController().handleWebhook(action);
-  res.sendStatus(status);
+  new WebhookController().handleWebhook(action)
+      .then(status => res.sendStatus(status));
 });
 
 function verifyTrelloWebhookRequest(request, secret, callbackURL) {
