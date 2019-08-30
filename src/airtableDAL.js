@@ -8,8 +8,7 @@ const base = new airtable({ apiKey: config.airtable.apiKey }).base(config.airtab
 module.exports = function AirtableDAL() {
     this.selectClientsByNamePrefix = function(trelloCard) {
         debug("Searching for client '%s'", trelloCard.name);
-        // TODO: Make table name configurable
-        return base('Cases as of 6/13/19').select({
+        return base(config.airtable.tableName).select({
             fields: ["Client Name", "Trello Comments"],
             filterByFormula: "FIND('" + trelloCard.name + "',{Client Name}) = 1",
             pageSize: PAGE_SIZE
@@ -20,7 +19,7 @@ module.exports = function AirtableDAL() {
         debug("Updating record id %s", recordId);
         // TODO: Handle whatever errors Airtable updates may encounter
         if (recordId.length > 0) {
-            base('Cases as of 6/13/19').update(recordId, {
+            base(config.airtable.tableName).update(recordId, {
                 "Last Worked On": new Date().toISOString(),
                 "Trello Comments": trelloComments
             });

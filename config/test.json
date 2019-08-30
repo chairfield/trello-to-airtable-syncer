@@ -6,6 +6,7 @@
   },
   "airtable": {
     "apiKey": "",
-    "baseId": ""
+    "baseId": "",
+    "tableName": ""
   }
 }
