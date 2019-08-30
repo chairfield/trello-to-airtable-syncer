@@ -6,7 +6,6 @@ module.exports = function ClientLookupService() {
         const records = await new AirtableDAL().selectClientsByNamePrefix(trelloCard);
 
         records.forEach(function(record) {
-            // TODO: Update Airtable by appending newest comment
             debug("Retrieved record '%s', id=%s", record.get("Client Name"), record.id);
         });
 
