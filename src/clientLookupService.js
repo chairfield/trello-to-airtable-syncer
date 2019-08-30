@@ -17,5 +17,7 @@ module.exports = function ClientLookupService() {
 
         // TODO: Filter down to the newest record to update
         // TODO: Email if there are 2+ records submitted around the same time
+        // TODO: If there are multiple records and their names are different, that's an error (either that, or change my
+        // prefix query to be for exact matches only)
     };
 };
