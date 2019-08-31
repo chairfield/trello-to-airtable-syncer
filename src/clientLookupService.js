@@ -16,10 +16,14 @@ module.exports = function ClientLookupService() {
             throw new Error(records.length + " records returned.");
         }
 
+        const recordNames = records.map(record => record.get("Client Name"));
+        if (recordNames.some(name => name !== recordNames[0])) {
+            throw new Error("Not all Client Names matched.");
+        }
+
         // TODO: Filter down to the newest record to update
+
         // TODO: Email if there are 2+ records submitted around the same time
-        // TODO: If there are multiple records and their names are different, that's an error (either that, or change my
-        // prefix query to be for exact matches only)
         return records[0];
     };
 };

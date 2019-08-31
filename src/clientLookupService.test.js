@@ -43,4 +43,14 @@ describe("ClientLookupService -> filtering records to a match", () => {
         const result = new ClientLookupService()._filterMatch([record]);
         expect(result).toBe(record);
     });
+
+    test("When multiple records contain different names, an error is thrown", () => {
+        const records = [
+            new Record(123, "Joe Walsh"),
+            new Record(234, "Joe Walsher")
+        ];
+        expect(() => {
+            new ClientLookupService()._filterMatch(records);
+        }).toThrow("Not all Client Names matched.");
+    });
 });
