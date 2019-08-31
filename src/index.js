@@ -19,15 +19,15 @@ router.get('/', function(req, res) {
  */
 router.post('/', function(req, res) {
   if (!verifyTrelloWebhookRequest(req, config.trello.secret, config.trello.callbackUrl)) {
-    debug("Not a verified Trello webhook. Is your callbackURL correct?");
+    debug('Not a verified Trello webhook. Is your callbackURL correct?');
     res.sendStatus(500);
     return;
   }
 
   const { action } = req.body;
 
-  if (typeof action === "undefined") {
-    debug("req.body.action is undefined");
+  if (typeof action === 'undefined') {
+    debug('req.body.action is undefined');
     res.sendStatus(500);
     return;
   }

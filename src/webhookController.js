@@ -6,19 +6,19 @@ module.exports = function WebhookController() {
     this.handleWebhook = async function(action) {
         const trelloAction = new TrelloAction(action);
 
-        let commentToAppend = "On " + new Date().toISOString() + ", " + trelloAction.user.fullName;
+        let commentToAppend = 'On ' + new Date().toISOString() + ', ' + trelloAction.user.fullName;
         switch (trelloAction.type) {
-            case "commentCard":
-                commentToAppend += " commented: \"" + trelloAction.commentText + "\"";
+            case 'commentCard':
+                commentToAppend += ' commented: "' + trelloAction.commentText + '"';
                 break;
-            case "addAttachmentToCard":
-                commentToAppend += " added an attachment: " + JSON.stringify(trelloAction.attachment);
+            case 'addAttachmentToCard':
+                commentToAppend += ' added an attachment: ' + JSON.stringify(trelloAction.attachment);
                 break;
-            case "deleteAttachmentFromCard":
-                commentToAppend += " removed an attachment: " + JSON.stringify(trelloAction.attachment);
+            case 'deleteAttachmentFromCard':
+                commentToAppend += ' removed an attachment: ' + JSON.stringify(trelloAction.attachment);
                 break;
             default:
-                debug("Ignoring action of type %s", trelloAction.type);
+                debug('Ignoring action of type: %s', trelloAction.type);
                 return 200;
         }
 
