@@ -9,7 +9,7 @@ module.exports = function AirtableDAL() {
     this.selectClientsByNamePrefix = function(trelloCard) {
         debug("Searching for client '%s'", trelloCard.name);
         return base(config.airtable.tableName).select({
-            fields: ["Client Name", "Trello Comments"],
+            fields: ["Client Name", "Trello Comments", "Submission date [new]"],
             // This performs a prefix search on all records in the Airtable. For instance, searching for "Joe Walsh"
             // will match "Joe Walsh", but also "Joe Walsher". It is up to the ClientLookupService to interpret the
             // results appropriately.
