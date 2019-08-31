@@ -4,7 +4,10 @@ const AirtableDAL = require('./airtableDAL');
 module.exports = function ClientLookupService() {
     this.findMatchingClient = async function(trelloCard) {
         const records = await new AirtableDAL().selectClientsByNamePrefix(trelloCard);
+        return this._filterMatch(records);
+    };
 
+    this._filterMatch = function(records) {
         records.forEach(function(record) {
             debug("Retrieved record '%s', id=%s", record.get("Client Name"), record.id);
         });
