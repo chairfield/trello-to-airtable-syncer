@@ -23,7 +23,19 @@ describe("ClientLookupService -> filtering records to a match", () => {
     test("When passed 0 records, an error is thrown", () => {
         expect(() => {
             new ClientLookupService()._filterMatch([]);
-        }).toThrow("No records returned.");
+        }).toThrow("0 records returned.");
+    });
+
+    test("When passed more than 20 records, an error is thrown", () => {
+        const record = new Record(123, "Joe");
+        let records = [];
+        for (let i = 0; i < 21; i++) {
+            records.push(record);
+        }
+
+        expect(() => {
+            new ClientLookupService()._filterMatch(records);
+        }).toThrow("21 records returned.");
     });
 
     test("When passed 1 record, that record is returned", () => {
