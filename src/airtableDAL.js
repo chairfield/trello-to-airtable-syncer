@@ -10,9 +10,12 @@ module.exports = function AirtableDAL() {
         debug("Searching for client '%s'", trelloCard.name);
         return base(config.airtable.tableName).select({
             fields: ["Client Name", "Trello Comments"],
+            // This performs a prefix search on all records in the Airtable. For instance, searching for "Joe Walsh"
+            // will match "Joe Walsh", but also "Joe Walsher". It is up to the ClientLookupService to interpret the
+            // results appropriately.
             filterByFormula: "FIND('" + trelloCard.name + "',{Client Name}) = 1",
-            pageSize: PAGE_SIZE
-        }).all();
+            pageSize: PAGE_SIZE // This may not be useful now that we're calling .all() instead of .firstPage()
+        }).all(); // The .all() method paginates for us, returning all matching records from Airtable
     };
 
     this.updateClient = function(recordId, trelloComments) {
