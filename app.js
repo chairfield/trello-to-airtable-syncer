@@ -1,10 +1,10 @@
-var express = require('express');
-var morgan = require('morgan');
+const express = require('express');
+const morgan = require('morgan');
 
-var indexRouter = require('./src/index');
-var winston = require('./config/winston');
+const indexRouter = require('./src/index');
+const winston = require('./config/winston');
 
-var app = express();
+const app = express();
 
 app.use(morgan('combined', { stream: winston.stream }));
 app.use(express.json());
