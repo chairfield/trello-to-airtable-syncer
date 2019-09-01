@@ -2,6 +2,8 @@ var appRoot = require('app-root-path');
 var winston = require('winston');
 require('winston-daily-rotate-file');
 
+const { combine, timestamp, prettyPrint } = winston.format;
+
 var options = {
     errors: {
         level: 'error',
@@ -31,6 +33,10 @@ var options = {
 };
 
 var logger = winston.createLogger({
+    format: combine(
+        timestamp(),
+        prettyPrint()
+    ),
     transports: [
         new winston.transports.DailyRotateFile(options.errors),
         new winston.transports.DailyRotateFile(options.combined),
