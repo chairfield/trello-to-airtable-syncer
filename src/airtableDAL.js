@@ -21,12 +21,14 @@ module.exports = function AirtableDAL() {
 
     this.updateClient = function(recordId, trelloComments) {
         debug('Updating record id: %s', recordId);
-        // TODO: Handle whatever errors Airtable updates may encounter
-        if (recordId.length > 0) {
-            let fields = {};
-            fields[AirtableFields.LAST_WORKED_ON] = new Date().toISOString();
-            fields[AirtableFields.TRELLO_COMMENTS] = trelloComments;
-            base(config.airtable.tableName).update(recordId, fields);
+        if (recordId.length === 0) {
+            throw new Error('Cannot update with an empty recordId.');
         }
+
+        // TODO: Handle whatever errors Airtable updates may encounter
+        let fields = {};
+        fields[AirtableFields.LAST_WORKED_ON] = new Date().toISOString();
+        fields[AirtableFields.TRELLO_COMMENTS] = trelloComments;
+        return base(config.airtable.tableName).update(recordId, fields);
     };
 };

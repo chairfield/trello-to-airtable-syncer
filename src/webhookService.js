@@ -25,7 +25,7 @@ module.exports = function WebhookService() {
             validateWebhook(trelloAction);
             const airtableRecord = await new ClientLookupService().findMatchingClient(trelloAction.card);
             debug('Appending the following comment: ' + commentToAppend);
-            new AirtableDAL().updateClient(
+            await new AirtableDAL().updateClient(
                 airtableRecord.id,
                 appendComment(airtableRecord.get('Trello Comments'), commentToAppend));
         } catch (error) {
