@@ -25,7 +25,6 @@ module.exports = function AirtableDAL() {
             throw new Error('Cannot update with an empty recordId.');
         }
 
-        // TODO: Handle whatever errors Airtable updates may encounter
         let fields = {};
         fields[AirtableFields.LAST_WORKED_ON] = new Date().toISOString();
         fields[AirtableFields.TRELLO_COMMENTS] = trelloComments;

@@ -34,7 +34,6 @@ module.exports = function WebhookService() {
             winston.error(error.toString(), trelloAction);
 
             // TODO: Differentiate between user (e.g., user not found) and system (e.g., airtable timing out) errors
-            // TODO: Pass up enough information for the controller to optionally send an email
         }
 
         return 200;
