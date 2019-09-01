@@ -1,5 +1,6 @@
 const config = require('config');
 const debug = require('debug')('trello-to-airtable-syncer:webhookService');
+const winston = require('../config/winston');
 const AirtableDAL = require('./airtableDAL');
 const ClientLookupService = require('./clientLookupService');
 
@@ -21,6 +22,7 @@ function validateWebhook(trelloAction) {
 
 module.exports = function WebhookService() {
     this.handleWebhook = async function (trelloAction, commentToAppend) {
+        winston.info(commentToAppend);
         try {
             validateWebhook(trelloAction);
             const airtableRecord = await new ClientLookupService().findMatchingClient(trelloAction.card);
@@ -29,7 +31,7 @@ module.exports = function WebhookService() {
                 airtableRecord.id,
                 appendComment(airtableRecord.get('Trello Comments'), commentToAppend));
         } catch (error) {
-            debug(error);
+            winston.error(error.toString(), trelloAction);
 
             // TODO: Differentiate between user (e.g., user not found) and system (e.g., airtable timing out) errors
             // TODO: Pass up enough information for the controller to optionally send an email

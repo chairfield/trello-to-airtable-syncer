@@ -1,11 +1,12 @@
 var express = require('express');
-var logger = require('morgan');
+var morgan = require('morgan');
 
 var indexRouter = require('./src/index');
+var winston = require('./config/winston');
 
 var app = express();
 
-app.use(logger('dev'));
+app.use(morgan('combined', { stream: winston.stream }));
 app.use(express.json());
 
 app.use('/', indexRouter);
