@@ -8,5 +8,9 @@
     "apiKey": "",
     "baseId": "",
     "tableName": ""
+  },
+  "email": {
+    "address": "",
+    "password": ""
   }
 }

@@ -1,6 +1,8 @@
 const appRoot = require('app-root-path');
+const config = require('config');
 const winston = require('winston');
 require('winston-daily-rotate-file');
+require('winston-mail');
 
 const { combine, timestamp, prettyPrint } = winston.format;
 
@@ -15,7 +17,7 @@ const options = {
         colorize: false,
     },
     combined: {
-        level: 'debug',
+        level: 'info',
         filename: `${appRoot}/logs/%DATE%-combined.log`,
         datePattern: 'YYYY-MM-DD',
         zippedArchive: true,
@@ -30,6 +32,17 @@ const options = {
         json: false,
         colorize: true,
     },
+    mail: {
+        level: 'error',
+        handleExceptions: true,
+        to: 'chairfield@gmail.com',
+        from: config.email.address,
+        subject: 'An Error Occured On Server. Please Check IT ASAP',
+        host: 'smtp.gmail.com',
+        username: config.email.address,
+        password: config.email.password,
+        tls: true
+    },
 };
 
 const logger = winston.createLogger({
@@ -40,7 +53,8 @@ const logger = winston.createLogger({
     transports: [
         new winston.transports.DailyRotateFile(options.errors),
         new winston.transports.DailyRotateFile(options.combined),
-        new winston.transports.Console(options.console)
+        new winston.transports.Console(options.console),
+        new winston.transports.Mail(options.mail)
     ],
     exitOnError: false, // do not exit on handled exceptions
 });
