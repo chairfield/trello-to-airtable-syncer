@@ -37,7 +37,7 @@ const options = {
         handleExceptions: true,
         to: 'chairfield@gmail.com',
         from: config.email.address,
-        subject: 'An Error Occured On Server. Please Check IT ASAP',
+        subject: 'trello-to-airtable-syncer error',
         host: 'smtp.gmail.com',
         username: config.email.address,
         password: config.email.password,
