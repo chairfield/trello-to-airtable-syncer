@@ -26,11 +26,11 @@ describe('ClientLookupService -> filtering records to a match', () => {
     test('When passed 0 records, an error is thrown', () => {
         expect(() => {
             new ClientLookupService()._filterMatch([]);
-        }).toThrow('0 records returned.');
+        }).toThrow('FilterMatch called with 0 records.');
     });
 
-    test('When passed more than 20 records, an error is thrown', () => {
-        const record = new Record(123, 'Joe');
+    test('When passed more than 20 records, an error is thrown with the names of all records', () => {
+        const record = new Record(123, 'a');
         let records = [];
         for (let i = 0; i < 21; i++) {
             records.push(record);
@@ -38,7 +38,7 @@ describe('ClientLookupService -> filtering records to a match', () => {
 
         expect(() => {
             new ClientLookupService()._filterMatch(records);
-        }).toThrow('21 records returned.');
+        }).toThrow('21 records returned: a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a');
     });
 
     test('When passed 1 record, that record is returned', () => {
@@ -54,7 +54,7 @@ describe('ClientLookupService -> filtering records to a match', () => {
         ];
         expect(() => {
             new ClientLookupService()._filterMatch(records);
-        }).toThrow('Not all Client Names matched.');
+        }).toThrow('Not all Client Names matched: Joe Walsh,Joe Walsher');
     });
 
     test('When multiple records for the name client, return the newest', () => {

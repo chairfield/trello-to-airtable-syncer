@@ -13,21 +13,29 @@ module.exports = function ClientLookupService() {
             debug('Retrieved record: %s, id: %s', record.get(AirtableFields.CLIENT_NAME), record.id);
         });
 
-        if (records.length === 0 || records.length > 20) {
-            throw new Error(records.length + ' records returned.');
-        }
-
         const recordNames = records.map(record => record.get(AirtableFields.CLIENT_NAME));
-        if (recordNames.some(name => name !== recordNames[0])) {
-            throw new Error('Not all Client Names matched.');
-        }
-
-        // TODO: Email a warning (not an error) if there are 2+ records submitted around the same time, as this could be
-        //  the same client input twice.
-
+        this._validateRecords(recordNames);
         const recordsByDateMap =
             records.map(record => [ Date.parse(record.get(AirtableFields.SUBMISSION_DATE)), record ]);
         const reduceToMostRecent = (previous, current) => current[0] > previous[0] ? current : previous;
         return recordsByDateMap.reduce(reduceToMostRecent)[1];
     };
+
+    this._validateRecords = function(recordNames) {
+        function createDebugString(recordNames) {
+            return recordNames.join(',').slice(0, 200);
+        }
+
+        // TODO: Email a warning (not an error) if there are 2+ records submitted around the same time, as this could be
+        //  the same client input twice.
+        const recordCount = recordNames.length;
+        if (recordCount === 0) {
+            throw new Error('FilterMatch called with 0 records.');
+        } else if (recordCount > 20) {
+            // Too many records indicates an overly-permissive Airtable select query.
+            throw new Error(recordCount + ' records returned: ' + createDebugString(recordNames));
+        } else if (recordNames.some(name => name !== recordNames[0])) {
+            throw new Error('Not all Client Names matched: ' + createDebugString(recordNames));
+        }
+    }
 };
