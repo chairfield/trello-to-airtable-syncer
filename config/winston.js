@@ -45,22 +45,28 @@ const options = {
     },
 };
 
-const logger = winston.createLogger({
-    format: combine(
-        timestamp(),
-        prettyPrint()
-    ),
-    transports: [
-        new winston.transports.DailyRotateFile(options.errors),
-        new winston.transports.DailyRotateFile(options.combined),
-        new winston.transports.Console(options.console),
-        new winston.transports.Mail(options.mail)
-    ],
-    exitOnError: false, // do not exit on handled exceptions
-});
+const logger = winston.createLogger(
+    (process.env.NODE_ENV === 'test')
+        ? {
+            transports: [ new winston.transports.Console({ level: 'error'}) ]
+        }
+        : {
+            format: combine(
+                timestamp(),
+                prettyPrint()
+            ),
+            transports: [
+                new winston.transports.DailyRotateFile(options.errors),
+                new winston.transports.DailyRotateFile(options.combined),
+                new winston.transports.Console(options.console),
+                new winston.transports.Mail(options.mail)
+            ],
+            exitOnError: false, // do not exit on handled exceptions
+        });
 
+// This routes morgan logs to winston
 logger.stream = {
-    write: function(message, encoding) {
+    write: function (message, encoding) {
         logger.info(message);
     },
 };
