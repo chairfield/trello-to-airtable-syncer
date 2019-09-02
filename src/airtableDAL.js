@@ -22,7 +22,7 @@ module.exports = function AirtableDAL() {
     this.updateClient = function(recordId, trelloComments) {
         debug('Updating record id: %s', recordId);
         if (recordId.length === 0) {
-            throw new Error('Cannot update with an empty recordId.');
+            throw new Error('Empty recordId, cannot update with comment: ' + trelloComments);
         }
 
         let fields = {};
