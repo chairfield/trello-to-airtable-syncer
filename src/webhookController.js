@@ -1,4 +1,4 @@
-const debug = require('debug')('trello-to-airtable-syncer:webhookController');
+const winston = require('../config/winston');
 const TrelloAction = require('./trelloAction');
 const WebhookService = require('./webhookService');
 
@@ -18,7 +18,7 @@ module.exports = function WebhookController() {
                 commentToAppend += ' removed an attachment: ' + JSON.stringify(trelloAction.attachment);
                 break;
             default:
-                debug('Ignoring action of type: %s', trelloAction.type);
+                winston.debug('Ignoring action of type: %s', trelloAction.type);
                 return 200;
         }
 

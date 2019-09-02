@@ -1,6 +1,6 @@
 const airtable = require('airtable');
 const config = require('config');
-const debug = require('debug')('trello-to-airtable-syncer:airtable');
+const winston = require('../config/winston');
 const AirtableFields = require('./airtableFields');
 
 const PAGE_SIZE = 100;
@@ -8,7 +8,7 @@ const base = new airtable({ apiKey: config.airtable.apiKey }).base(config.airtab
 
 module.exports = function AirtableDAL() {
     this.selectClientsByNamePrefix = function(trelloCard) {
-        debug('Searching for client: %s', trelloCard.name);
+        winston.info('Searching for client: ' + trelloCard.name);
         return base(config.airtable.tableName).select({
             fields: [AirtableFields.CLIENT_NAME, AirtableFields.TRELLO_COMMENTS, AirtableFields.SUBMISSION_DATE],
             // This performs a prefix search on all records in the Airtable. For instance, searching for "Joe Walsh"
@@ -20,7 +20,7 @@ module.exports = function AirtableDAL() {
     };
 
     this.updateClient = function(recordId, trelloComments) {
-        debug('Updating record id: %s', recordId);
+        winston.info('Updating record id: ' + recordId);
         if (recordId.length === 0) {
             throw new Error('Empty recordId, cannot update with comment: ' + trelloComments);
         }

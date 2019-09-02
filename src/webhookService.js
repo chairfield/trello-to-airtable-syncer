@@ -1,5 +1,4 @@
 const config = require('config');
-const debug = require('debug')('trello-to-airtable-syncer:webhookService');
 const winston = require('../config/winston');
 const AirtableDAL = require('./airtableDAL');
 const ClientLookupService = require('./clientLookupService');
@@ -10,12 +9,12 @@ function appendComment(currentComments, commentToAppend) {
 
 function validateWebhook(trelloAction) {
     if (trelloAction.board.id !== config.trello.expectedBoardId) {
-        debug('Invalid Trello board id: %s', trelloAction.board.id);
+        winston.error('Invalid Trello board id: %s', trelloAction.board.id);
         throw new Error('Invalid Trello board id: ' + trelloAction.board.id);
     }
 
     if (trelloAction.card.name.length < 5) {
-        debug('Card name is too short: %s', trelloAction.card.name);
+        winston.error('Card name is too short: %s', trelloAction.card.name);
         throw new Error('Card name is too short: ' + trelloAction.card.name);
     }
 }
@@ -26,7 +25,7 @@ module.exports = function WebhookService() {
         try {
             validateWebhook(trelloAction);
             const airtableRecord = await new ClientLookupService().findMatchingClient(trelloAction.card);
-            debug('Appending the following comment: ' + commentToAppend);
+            winston.info('Appending the following comment: ' + commentToAppend);
             await new AirtableDAL().updateClient(
                 airtableRecord.id,
                 appendComment(airtableRecord.get('Trello Comments'), commentToAppend));

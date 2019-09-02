@@ -1,4 +1,4 @@
-const debug = require('debug')('trello-to-airtable-syncer:clientLookupService');
+const winston = require('../config/winston');
 const AirtableDAL = require('./airtableDAL');
 const AirtableFields = require('./airtableFields');
 
@@ -10,7 +10,7 @@ module.exports = function ClientLookupService() {
 
     this._filterMatch = function(records) {
         records.forEach(function(record) {
-            debug('Retrieved record: %s, id: %s', record.get(AirtableFields.CLIENT_NAME), record.id);
+            winston.info('Retrieved record: %s, id: %s', record.get(AirtableFields.CLIENT_NAME), record.id);
         });
 
         const recordNames = records.map(record => record.get(AirtableFields.CLIENT_NAME));

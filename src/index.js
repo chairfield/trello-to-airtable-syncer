@@ -1,6 +1,6 @@
 const config = require('config');
 const crypto = require('crypto');
-const debug = require('debug')('trello-to-airtable-syncer:index');
+const winston = require('../config/winston');
 const express = require('express');
 const WebhookController = require('./webhookController');
 
@@ -19,7 +19,7 @@ router.get('/', function(req, res) {
  */
 router.post('/', function(req, res) {
   if (!verifyTrelloWebhookRequest(req, config.trello.secret, config.trello.callbackUrl)) {
-    debug('Not a verified Trello webhook. Is your callbackURL correct?');
+    winston.error('Not a verified Trello webhook. Is your callbackURL correct?');
     res.sendStatus(500);
     return;
   }
@@ -27,7 +27,7 @@ router.post('/', function(req, res) {
   const { action } = req.body;
 
   if (typeof action === 'undefined') {
-    debug('req.body.action is undefined');
+    winston.error('req.body.action is undefined');
     res.sendStatus(500);
     return;
   }
