@@ -18,7 +18,7 @@ module.exports = function WebhookController() {
                 commentToAppend += ' removed an attachment: ' + JSON.stringify(trelloAction.attachment);
                 break;
             default:
-                winston.debug('Ignoring action of type: %s', trelloAction.type);
+                winston.debug('Ignoring action of type: ' + trelloAction.type);
                 return 200;
         }
 
