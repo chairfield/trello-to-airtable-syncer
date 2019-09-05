@@ -4,7 +4,7 @@ management workers to review updates with less context switching.
 
 ## Limitations
 * Comments or attachments added before the record exists in Airtable are ignored.
-* Updates to cards in the Pending list are ignored.
+* The names of the Trello card and Airtable record must match, or at least come close (TODO: explain the fuzzy matching)
 
 ## Contributing
 Pull requests are welcome.
