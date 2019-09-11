@@ -9,13 +9,15 @@ function appendComment(currentComments, commentToAppend) {
 
 function validateWebhook(trelloAction) {
     if (trelloAction.board.id !== config.trello.expectedBoardId) {
-        winston.error('Invalid Trello board id: %s', trelloAction.board.id);
-        throw new Error('Invalid Trello board id: ' + trelloAction.board.id);
+        const errorMessage = 'Invalid Trello board id: ' + trelloAction.board.id;
+        winston.error(errorMessage);
+        throw new Error(errorMessage);
     }
 
     if (trelloAction.card.name.length < 5) {
-        winston.error('Card name is too short: %s', trelloAction.card.name);
-        throw new Error('Card name is too short: ' + trelloAction.card.name);
+        const errorMessage = 'Card name is too short: ' + trelloAction.card.name;
+        winston.error(errorMessage);
+        throw new Error(errorMessage);
     }
 }
 
