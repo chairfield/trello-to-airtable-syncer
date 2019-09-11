@@ -33,8 +33,6 @@ module.exports = function WebhookService() {
                 appendComment(airtableRecord.get('Trello Comments'), commentToAppend));
         } catch (error) {
             winston.error(error.toString(), trelloAction);
-
-            // TODO: Differentiate between user (e.g., user not found) and system (e.g., airtable timing out) errors
         }
 
         return 200;

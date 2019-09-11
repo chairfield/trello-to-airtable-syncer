@@ -26,8 +26,6 @@ module.exports = function ClientLookupService() {
             return recordNames.join(',').slice(0, 200);
         }
 
-        // TODO: Email a warning (not an error) if there are 2+ records submitted around the same time, as this could be
-        //  the same client input twice.
         const recordCount = recordNames.length;
         if (recordCount === 0) {
             throw new Error('FilterMatch called with 0 records.');

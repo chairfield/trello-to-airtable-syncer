@@ -22,7 +22,6 @@ module.exports = function WebhookController() {
                 return 200;
         }
 
-        // TODO: Add ability to optionally send an email on select errors
         return new WebhookService().handleWebhook(trelloAction, commentToAppend);
     };
 };
