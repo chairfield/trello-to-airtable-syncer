@@ -4,7 +4,7 @@
   "description": "Syncs Trello comments to Airtable",
   "main": "bin/www",
   "dependencies": {
-    "airtable": "^0.7.1",
+    "airtable": "^0.7.2",
     "app-root-path": "^2.2.1",
     "config": "^3.2.2",
     "express": "^4.17.1",
