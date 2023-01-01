@@ -6,7 +6,7 @@
   "dependencies": {
     "airtable": "^0.7.1",
     "app-root-path": "^2.2.1",
-    "config": "^3.2.2",
+    "config": "^3.3.8",
     "express": "^4.17.1",
     "morgan": "^1.9.1",
     "winston": "^3.2.1",
